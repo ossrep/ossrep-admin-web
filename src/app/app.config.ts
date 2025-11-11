@@ -1,27 +1,28 @@
 import {
-  APP_INITIALIZER,
-  ApplicationConfig, inject, provideAppInitializer,
-  provideBrowserGlobalErrorListeners,
-  provideZoneChangeDetection
+  ApplicationConfig, inject, provideAppInitializer, provideBrowserGlobalErrorListeners, provideZoneChangeDetection
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
-import { authConfig } from './auth/auth.config';
-import { OidcSecurityService, provideAuth } from 'angular-auth-oidc-client';
-import { provideHttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { OidcSecurityService, provideAuth, StsConfigLoader } from 'angular-auth-oidc-client';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { httpLoaderFactory } from './auth/auth.config';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideAuth(authConfig),
     provideHttpClient(),
+    provideAuth({
+      loader: {
+        provide: StsConfigLoader,
+        useFactory: httpLoaderFactory,
+        deps: [HttpClient]
+      }
+    }),
     provideAppInitializer(() => {
       const oidcSecurityService = inject(OidcSecurityService);
-      // Return the Observable directly, not a function
       return oidcSecurityService.checkAuth();
     })
   ]
