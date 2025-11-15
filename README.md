@@ -1,4 +1,21 @@
-# OssrepAdminWeb
+# ossrep-admin-web
+
+```shell
+npm run build
+podman build -t quay.io/ossrep/ossrep-admin-web:local .
+```
+
+Run locally with environment variables
+```shell
+podman run -d --rm --name ossrep-admin-web -p 4200:8080 \
+  -e OIDC_URL="http://localhost:8001/realms/ossrep-local-dev" \
+  -e OIDC_CLIENT_ID="ossrep-admin-web" \
+  quay.io/ossrep/ossrep-admin-web:local
+  
+podman stop ossrep-admin-web
+```
+
+# Angular
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.9.
 
